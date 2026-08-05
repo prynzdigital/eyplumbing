@@ -13,7 +13,7 @@ export default function ContactSection() {
     <section id="contact" aria-labelledby="contact-heading" className="bg-white">
       <div className="py-3xl">
         <Container>
-          <div className="mx-auto flex max-w-[480px] flex-col items-center gap-lg text-center">
+          <div className="mx-auto flex max-w-[640px] flex-col items-center gap-lg text-center">
             <div>
               <h2 id="contact-heading" className="text-h2 lg:text-h2-lg font-bold text-ink">
                 Contact EY Plumbing Solution

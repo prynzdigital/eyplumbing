@@ -47,14 +47,16 @@ export default function AboutSection() {
           </p>
         </div>
 
-        <div className="mx-auto mt-xl max-w-[720px]">
-          <h3 className="text-h3 font-bold text-ink">How We Work</h3>
-          <p className="mt-sm text-body text-ink-muted">
-            When you call, we talk through what&apos;s going on before anything else — what the
-            problem is, roughly what&apos;s involved in fixing it, and when we can get to you. For
-            emergencies, that conversation happens fast; for planned installation or maintenance
-            work, we take the time to get the details right.
-          </p>
+        <div className="mt-xl">
+          <div className="mx-auto max-w-[720px]">
+            <h3 className="text-h3 font-bold text-ink">How We Work</h3>
+            <p className="mt-sm text-body text-ink-muted">
+              When you call, we talk through what&apos;s going on before anything else — what the
+              problem is, roughly what&apos;s involved in fixing it, and when we can get to you. For
+              emergencies, that conversation happens fast; for planned installation or maintenance
+              work, we take the time to get the details right.
+            </p>
+          </div>
           <div className="mt-lg grid grid-cols-1 gap-md lg:grid-cols-3">
             {PRINCIPLES.map((p) => (
               <div key={p.title} className="rounded-md border border-border bg-surface-alt p-md shadow-sm">

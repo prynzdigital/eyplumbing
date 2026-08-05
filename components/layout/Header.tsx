@@ -108,7 +108,7 @@ export default function Header() {
           <div className="flex h-16 items-center justify-between gap-lg lg:h-20">
             <a
               href="#hero"
-              className={`rounded-sm text-h4-lg font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${textColor} ${
+              className={`rounded-sm text-h4 font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${textColor} ${
                 solid
                   ? "focus-visible:outline-primary"
                   : "focus-visible:outline-white focus-visible:ring-2 focus-visible:ring-primary"
@@ -124,7 +124,7 @@ export default function Header() {
                   <a
                     key={link.id}
                     href={`#${link.id}`}
-                    className={`rounded-sm border-b-2 py-sm text-body font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                    className={`rounded-sm border-b-2 py-sm text-small lg:text-small-lg font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
                       solid
                         ? `focus-visible:outline-primary hover:text-secondary-hover ${
                             isActive ? "border-secondary text-secondary" : "border-transparent text-ink"
@@ -145,7 +145,7 @@ export default function Header() {
             <div className="hidden items-center gap-md lg:flex">
               <a
                 href={PHONE_TEL}
-                className={`rounded-sm text-phone-lg font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                className={`rounded-sm text-phone font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
                   solid
                     ? "text-primary hover:text-secondary-hover focus-visible:outline-primary"
                     : "text-white hover:text-white/80 focus-visible:outline-white focus-visible:ring-2 focus-visible:ring-primary"

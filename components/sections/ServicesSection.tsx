@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Container from "../ui/Container";
 import CallCTA from "../ui/Button";
 import Surface from "../ui/Surface";
@@ -33,16 +34,27 @@ export default function ServicesSection() {
   return (
     <section id="services" aria-labelledby="services-heading" className="bg-slate-50 py-2xl lg:py-3xl">
       <Container>
-        <div className="mx-auto max-w-[720px]">
-          <h2 id="services-heading" className="text-h2 lg:text-h2-lg font-bold text-ink">
-            Plumbing Services in Greater Accra
-          </h2>
-          <p className="mt-md text-body-lg lg:text-body-lg-lg text-ink-muted">
-            EY Plumbing Solution provides plumbing services across Greater Accra — repairs,
-            installations, and drain cleaning &amp; maintenance for homeowners and property
-            managers. Whether it&apos;s a burst pipe today or a new water heater next month, call
-            us directly and we&apos;ll talk through the job.
-          </p>
+        <div className="mx-auto flex max-w-[900px] flex-col gap-lg lg:flex-row lg:items-center lg:gap-xl">
+          <div className="relative aspect-[4/5] w-full max-w-xs shrink-0 self-center overflow-hidden rounded-md border border-border shadow-md lg:w-[300px] lg:self-start">
+            <Image
+              src="/hero/owner.jpeg"
+              alt="The owner of EY Plumbing Solution on the job"
+              fill
+              sizes="(min-width: 1024px) 300px, 320px"
+              className="object-cover"
+            />
+          </div>
+          <div>
+            <h2 id="services-heading" className="text-h2 lg:text-h2-lg font-bold text-ink">
+              Plumbing Services in Greater Accra
+            </h2>
+            <p className="mt-md text-body-lg lg:text-body-lg-lg text-ink-muted">
+              EY Plumbing Solution provides plumbing services across Greater Accra — repairs,
+              installations, and drain cleaning &amp; maintenance for homeowners and property
+              managers. Whether it&apos;s a burst pipe today or a new water heater next month, call
+              us directly and we&apos;ll talk through the job.
+            </p>
+          </div>
         </div>
 
         <div className="mt-xl grid grid-cols-1 gap-md lg:grid-cols-3 lg:items-start">

@@ -34,7 +34,7 @@ export default function ServicesSection() {
   return (
     <section id="services" aria-labelledby="services-heading" className="bg-slate-50 py-2xl lg:py-3xl">
       <Container>
-        <div className="mx-auto flex max-w-[900px] flex-col gap-lg lg:flex-row lg:items-center lg:gap-xl">
+        <div className="flex flex-col gap-lg lg:flex-row lg:items-center lg:gap-xl">
           <div className="relative aspect-[4/5] w-full max-w-xs shrink-0 self-center overflow-hidden rounded-md border border-border shadow-md lg:w-[300px] lg:self-start">
             <Image
               src="/hero/owner.jpeg"
@@ -44,7 +44,7 @@ export default function ServicesSection() {
               className="object-cover"
             />
           </div>
-          <div>
+          <div className="max-w-[600px]">
             <h2 id="services-heading" className="text-h2 lg:text-h2-lg font-bold text-ink">
               Plumbing Services in Greater Accra
             </h2>

@@ -143,16 +143,6 @@ export default function Header() {
             </nav>
 
             <div className="hidden items-center gap-md lg:flex">
-              <a
-                href={PHONE_TEL}
-                className={`rounded-sm text-phone font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
-                  solid
-                    ? "text-primary hover:text-secondary-hover focus-visible:outline-primary"
-                    : "text-white hover:text-white/80 focus-visible:outline-white focus-visible:ring-2 focus-visible:ring-primary"
-                }`}
-              >
-                {PHONE_DISPLAY}
-              </a>
               <CallCTA label={CTA.standard} size="compact" />
             </div>
 

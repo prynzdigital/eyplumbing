@@ -7,7 +7,7 @@ import CallCTA from "../ui/Button";
 import Surface from "../ui/Surface";
 import { ServiceTeaser } from "../ui/Card";
 import EmergencyBand from "./EmergencyBand";
-import { CTA, SERVICES, ServiceDef } from "@/lib/constants";
+import { CTA, SERVICES, ServiceDef, VALUE_PROPS } from "@/lib/constants";
 import { CheckIcon, ClockIcon, PipeWrenchIcon, WrenchIcon } from "../ui/icons";
 
 const ICONS = [WrenchIcon, PipeWrenchIcon, ClockIcon] as const;
@@ -34,17 +34,17 @@ export default function ServicesSection() {
   return (
     <section id="services" aria-labelledby="services-heading" className="bg-slate-50 py-2xl lg:py-3xl">
       <Container>
-        <div className="flex flex-col gap-lg lg:flex-row lg:items-center lg:gap-xl">
-          <div className="relative aspect-[4/5] w-full max-w-xs shrink-0 self-center overflow-hidden rounded-md border border-border shadow-md lg:w-[300px] lg:self-start">
+        <div className="flex flex-col gap-lg lg:flex-row lg:items-start lg:gap-xl">
+          <div className="relative aspect-[4/5] w-full max-w-xs self-center overflow-hidden rounded-md border border-border shadow-md lg:w-[40%] lg:max-w-none lg:self-start">
             <Image
               src="/hero/owner.jpeg"
               alt="The owner of EY Plumbing Solution on the job"
               fill
-              sizes="(min-width: 1024px) 300px, 320px"
+              sizes="(min-width: 1024px) 40vw, 320px"
               className="object-cover"
             />
           </div>
-          <div className="max-w-[600px]">
+          <div className="lg:w-[60%]">
             <h2 id="services-heading" className="text-h2 lg:text-h2-lg font-bold text-ink">
               Plumbing Services in Greater Accra
             </h2>
@@ -54,6 +54,17 @@ export default function ServicesSection() {
               managers. Whether it&apos;s a burst pipe today or a new water heater next month, call
               us directly and we&apos;ll talk through the job.
             </p>
+
+            <ul className="mt-lg flex flex-col gap-sm">
+              {VALUE_PROPS.map((prop) => (
+                <li key={prop.title} className="flex items-start gap-xs">
+                  <CheckIcon className="mt-1 shrink-0 text-secondary" width={18} height={18} />
+                  <span className="text-body text-ink-muted">
+                    <span className="font-semibold text-ink">{prop.title}.</span> {prop.body}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 

@@ -1,43 +1,35 @@
 "use client";
 
 import { TouchEvent, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Container from "../ui/Container";
 import CallCTA from "../ui/Button";
 import TrustBadge from "../ui/Badge";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DropletIcon,
-  PipeWrenchIcon,
-  WrenchIcon,
-} from "../ui/icons";
+import { ChevronLeftIcon, ChevronRightIcon } from "../ui/icons";
 import { VALUE_PROPS } from "@/lib/constants";
 
-// Hero/Slider (NEW) — design-system.md §6 / wireframes.md §1. No real
-// photography exists yet (style-guide.md §4), so all 3 slides are honest,
-// styled placeholders — navy/steel-blue gradients built from the existing
-// primary/secondary tokens (no ad hoc hex), a large decorative outline icon,
-// and a "Photo coming soon — [Service]" caption. The H1/subhead/CTA overlay
-// is stable and never changes per slide.
+// Hero/Slider — design-system.md §6 / wireframes.md §1. Real client-supplied
+// photography (public/hero/), replacing the original honest gradient
+// placeholders. Captions describe what's actually shown in each photo
+// rather than force-labeling every slide into a specific service category.
 const SLIDES = [
   {
     id: "repair",
-    gradient: "bg-gradient-to-br from-primary to-secondary",
-    Icon: WrenchIcon,
-    caption: "Photo coming soon — Plumbing Repair",
+    src: "/hero/slider-3.png",
+    alt: "EY Plumbing Solution technician installing a water filtration system under a sink",
+    caption: "Plumbing Repair & Installation",
   },
   {
     id: "installation",
-    gradient: "bg-gradient-to-br from-secondary-hover to-primary",
-    Icon: DropletIcon,
-    caption: "Photo coming soon — Plumbing Installation",
+    src: "/hero/slide-1.png",
+    alt: "A completed bathroom plumbing installation",
+    caption: "Bathroom Installations",
   },
   {
     id: "drain-emergency",
-    gradient:
-      "bg-[radial-gradient(circle,theme(colors.primary.pressed)_0%,theme(colors.primary.DEFAULT)_100%)]",
-    Icon: PipeWrenchIcon,
-    caption: "Photo coming soon — Drain Cleaning & Emergency Service",
+    src: "/hero/slider-2.jpeg",
+    alt: "EY Plumbing Solution crew working on-site in Accra",
+    caption: "On-Site in Accra",
   },
 ] as const;
 
@@ -109,20 +101,24 @@ export default function HeroSlider() {
         onTouchEnd={handleTouchEnd}
       >
         {/* Background slides */}
-        <div aria-hidden="true" className="absolute inset-0">
-          {SLIDES.map((s, i) => {
-            const Icon = s.Icon;
-            return (
-              <div
-                key={s.id}
-                className={`absolute inset-0 flex items-center justify-center ${s.gradient} transition-opacity duration-700 ${
-                  i === index ? "opacity-100" : "opacity-0"
-                }`}
-              >
-                <Icon className="h-40 w-40 text-white opacity-30 lg:h-64 lg:w-64" />
-              </div>
-            );
-          })}
+        <div aria-hidden="true" className="absolute inset-0 bg-primary">
+          {SLIDES.map((s, i) => (
+            <div
+              key={s.id}
+              className={`absolute inset-0 transition-opacity duration-700 ${
+                i === index ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <Image
+                src={s.src}
+                alt={s.alt}
+                fill
+                priority={i === 0}
+                sizes="100vw"
+                className="object-cover"
+              />
+            </div>
+          ))}
         </div>
 
         {/* Frost/Media scrim — full-bleed, full-hero-height (design-system.md

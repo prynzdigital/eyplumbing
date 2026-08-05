@@ -1,12 +1,15 @@
 # public/
 
-No static image assets are committed here yet. `.prynz/clients/ey-plumbing-solutions/assets/` was
-empty at build time (no logo file, no job-site photography) — see `05-development/build-notes.md`
-for the full list of pending client assets. The favicon is generated dynamically at
-`app/icon.tsx` as an honest interim placeholder (navy square + "EY" monogram), not a real logo.
+Client-supplied assets, wired in.
 
-Once real assets are supplied:
-- Place the logo (SVG/PNG, transparent background) here and wire it into `components/layout/Header.tsx`
-  and `components/layout/Footer.tsx` in place of the text wordmark.
-- Place job-site/team photography here and wire it into `components/ui/GalleryGrid.tsx` (pass an
-  `images` array) and `components/sections/Hero.tsx`.
+- `logo.svg` / `logo.png` — brand mark. Used in `components/layout/Header.tsx` (shown only in the
+  solid/frosted scrolled navbar state — no white/mono variant exists yet, so the transparent
+  over-hero state still uses the text wordmark) and as `app/icon.png` (favicon). `Footer.tsx` also
+  still uses the text wordmark (navy background, same reason).
+- `hero/` — 3 photos used by `components/sections/HeroSlider.tsx`'s slide rotation.
+- `gallery/` — 5 job photos used by `components/sections/GallerySection.tsx` via `GalleryGrid`'s
+  `images` prop.
+
+If a real white/light logo variant is supplied later, the Header's transparent state and the
+Footer can both switch from the text wordmark to the logo image — see the inline comment in
+`Header.tsx` above the logo conditional.

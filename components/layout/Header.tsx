@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { BUSINESS_NAME, CTA, PHONE_DISPLAY, PHONE_TEL, SECTION_NAV } from "@/lib/constants";
 import Container from "../ui/Container";
 import CallCTA from "../ui/Button";
@@ -108,13 +109,24 @@ export default function Header() {
           <div className="flex h-16 items-center justify-between gap-lg lg:h-20">
             <a
               href="#hero"
-              className={`rounded-sm text-h4 font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${textColor} ${
+              aria-label={BUSINESS_NAME}
+              className={`flex items-center rounded-sm font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
                 solid
                   ? "focus-visible:outline-primary"
                   : "focus-visible:outline-white focus-visible:ring-2 focus-visible:ring-primary"
               }`}
             >
-              {BUSINESS_NAME}
+              {solid ? (
+                // Logo mark — only shown against the solid/frosted (light)
+                // background. No white/mono variant of the logo exists yet
+                // (04-design/wireframes.md Open Questions), so the
+                // transparent-over-hero state keeps the white text
+                // wordmark below rather than rendering the navy logo
+                // illegibly over a photo.
+                <Image src="/logo.svg" alt={BUSINESS_NAME} width={36} height={29} priority />
+              ) : (
+                <span className={`text-h4 ${textColor}`}>{BUSINESS_NAME}</span>
+              )}
             </a>
 
             <nav aria-label="Primary" className="hidden items-center gap-lg lg:flex">

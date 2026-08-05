@@ -1,7 +1,17 @@
 import Container from "../ui/Container";
-import GalleryGrid from "../ui/GalleryGrid";
+import GalleryGrid, { GalleryImage } from "../ui/GalleryGrid";
 import CallCTA from "../ui/Button";
-import { CTA, GALLERY_PLACEHOLDER_COUNT } from "@/lib/constants";
+import { CTA } from "@/lib/constants";
+
+// Client-supplied job photos (public/gallery/), replacing the placeholder
+// "Photo coming soon" tiles.
+const GALLERY_IMAGES: GalleryImage[] = [
+  { src: "/gallery/job-01.jpg", alt: "Completed bathroom shower and vanity installation" },
+  { src: "/gallery/job-02.jpg", alt: "Modern kitchen faucet installation" },
+  { src: "/gallery/job-03.jpg", alt: "Plumbing repair work underneath a sink" },
+  { src: "/gallery/job-04.jpg", alt: "Faucet fixture with running water after repair" },
+  { src: "/gallery/job-05.png", alt: "Plumbing technician installing outdoor drainage pipework" },
+];
 
 // #gallery — Gallery (was /gallery, wireframes.md §5). Gallery tiles stay
 // solid (non-frost) per design-system.md §6 — the client's frost request
@@ -21,7 +31,7 @@ export default function GallerySection() {
         </div>
 
         <div className="mt-xl">
-          <GalleryGrid placeholderCount={GALLERY_PLACEHOLDER_COUNT} />
+          <GalleryGrid images={GALLERY_IMAGES} />
         </div>
 
         <div className="mt-xl flex justify-center">

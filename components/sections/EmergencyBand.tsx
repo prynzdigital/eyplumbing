@@ -10,20 +10,25 @@ export default function EmergencyBand({
   body,
   href,
   compact = false,
+  headingId,
 }: {
   headline: string;
   body: string;
   href?: string;
   compact?: boolean;
+  headingId?: string;
 }) {
   return (
-    <section className={`bg-accent ${compact ? "py-lg" : "py-2xl lg:py-3xl"}`}>
+    <div className={`bg-accent ${compact ? "py-lg" : "py-2xl lg:py-3xl"}`}>
       <Container>
         <div className="flex flex-col items-start gap-md lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-sm">
             <ClockIcon className="mt-2xs shrink-0 text-white" aria-hidden="true" />
             <div>
-              <h2 className={`${compact ? "text-h3" : "text-h2 lg:text-h2-lg"} font-bold text-white`}>
+              <h2
+                id={headingId}
+                className={`${compact ? "text-h3" : "text-h2 lg:text-h2-lg"} font-bold text-white`}
+              >
                 {headline}
               </h2>
               <p className="mt-2xs text-body text-white">{body}</p>
@@ -34,13 +39,13 @@ export default function EmergencyBand({
               href={href}
               className="inline-flex min-h-[44px] items-center justify-center rounded-sm bg-white px-lg text-button font-bold text-accent transition-colors hover:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
-              Go to Emergency Plumbing →
+              Go to Emergency →
             </a>
           ) : (
             <CallCTA label={CTA.standard} inverted />
           )}
         </div>
       </Container>
-    </section>
+    </div>
   );
 }

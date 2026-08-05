@@ -1,81 +1,103 @@
-import Link from "next/link";
 import { ReactNode } from "react";
-import { MapPinIcon } from "./icons";
+import { ChevronIcon, MapPinIcon } from "./icons";
+import Surface from "./Surface";
 
-// Card/Service — Home "Services Preview" + Services Hub grid
-// (design-system.md §6): default/hover/focus/active states via Tailwind
-// pseudo-classes (no client JS needed for a static hover/focus treatment).
-export function ServiceCard({
-  href,
+// Card/Service (UPDATED — now Frost/Light, design-system.md §6) — the
+// #services section's 3 teaser cards. No longer links to a separate page;
+// now a real <button> that triggers its own Accordion/ServiceDetail panel
+// (see ServicesSection.tsx, which owns the open/closed state per card).
+export function ServiceTeaser({
   icon,
   title,
   description,
+  expanded,
+  onToggle,
+  panelId,
 }: {
-  href: string;
   icon: ReactNode;
   title: string;
   description: string;
+  expanded: boolean;
+  onToggle: () => void;
+  panelId: string;
 }) {
   return (
-    <Link
-      href={href}
-      className="group flex flex-col gap-sm rounded-md border border-border bg-surface-alt p-md shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:border-secondary hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-0 active:shadow-sm"
+    <Surface
+      as="button"
+      type="button"
+      interactive
+      aria-expanded={expanded}
+      aria-controls={panelId}
+      onClick={onToggle}
+      className="flex w-full flex-col items-start gap-sm p-md text-left"
     >
       <span className="text-secondary" aria-hidden="true">
         {icon}
       </span>
       <h3 className="text-h3 font-bold text-ink">{title}</h3>
       <p className="text-body text-ink-muted">{description}</p>
-      <span className="mt-2xs text-body font-medium text-secondary group-hover:text-secondary-hover group-hover:underline">
-        Learn More →
+      <span className="mt-2xs inline-flex items-center gap-2xs text-body font-medium text-secondary">
+        See Full Details
+        <ChevronIcon
+          className={`transition-transform duration-150 ${expanded ? "rotate-180" : ""}`}
+          width={18}
+          height={18}
+        />
       </span>
-    </Link>
+    </Surface>
   );
 }
 
-// Card/TownArea — Service Areas hub grid + Town Page "Nearby Areas".
+// Card/TownArea (UPDATED — now Frost/Light) — all 8 town cards render
+// together in #service-areas (design-system.md §6). The "Nearby Areas"
+// cross-link sub-component from Revision 1 is retired — all 8 towns are
+// already simultaneously visible in this one grid.
 export function TownAreaCard({
-  href,
   name,
-  compact = false,
+  intro,
+  hasDetailedCopy,
 }: {
-  href: string;
   name: string;
-  compact?: boolean;
+  intro: string;
+  hasDetailedCopy: boolean;
 }) {
-  if (compact) {
-    return (
-      <Link
-        href={href}
-        className="flex items-center gap-xs rounded-sm border border-border bg-surface-alt px-md py-sm text-body font-medium text-ink transition-colors hover:border-secondary hover:text-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-      >
-        <MapPinIcon className="text-secondary shrink-0" width={18} height={18} />
-        {name}
-      </Link>
-    );
-  }
-
   return (
-    <Link
-      href={href}
-      className="group flex flex-col gap-xs rounded-md border border-border bg-surface-alt p-md shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:border-secondary hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-0 active:shadow-sm"
-    >
+    <Surface className="flex flex-col gap-xs p-md">
       <MapPinIcon className="text-secondary" aria-hidden="true" />
-      <h4 className="text-h4 font-semibold text-ink">{name}</h4>
+      <h4 className="text-h4 font-semibold text-ink">Plumber in {name}, Accra</h4>
       <p className="text-small lg:text-small-lg text-ink-muted">
         Serving {name} &amp; surrounding area
       </p>
-      <span className="mt-2xs text-small lg:text-small-lg font-medium text-secondary group-hover:underline">
-        View details →
-      </span>
-    </Link>
+      <p className="text-body text-ink-muted">{intro}</p>
+      <p className="mt-2xs text-small lg:text-small-lg text-slate-600">
+        Proposed coverage area — pending client confirmation.
+      </p>
+      {hasDetailedCopy && (
+        <span className="sr-only">
+          Detailed local copy for this town has been confirmed; the other 7 areas share a general
+          template.
+        </span>
+      )}
+    </Surface>
   );
 }
 
-// Card/Testimonial — currently ships in its empty state only (no real
-// testimonials exist yet, design-system.md §6 / homepage.md §6). The
-// populated-state markup is included so Development doesn't have to
-// rebuild layout later, but is not rendered anywhere at launch.
+// Card/Testimonial (UPDATED — now Frost/Light for future populated state).
+export function TestimonialCard({ quote, name, area }: { quote: string; name: string; area: string }) {
+  return (
+    <Surface className="flex flex-col gap-sm p-md">
+      <p className="text-body text-ink">&ldquo;{quote}&rdquo;</p>
+      <p className="text-small lg:text-small-lg text-ink-muted">
+        {name}, {area}
+      </p>
+    </Surface>
+  );
+}
+
+// Empty/placeholder state — intentionally plain/undecorated, NOT frosted
+// (design-system.md §6: "an empty-state block frosting itself would
+// visually overclaim 'there's something here'"). No real testimonials
+// exist yet; no invented quotes, names, or star ratings.
 export function TestimonialEmptyState() {
   return (
     <div className="mx-auto flex max-w-[600px] flex-col items-center gap-sm rounded-md border border-border bg-surface-alt px-lg py-3xl text-center shadow-sm">
@@ -92,29 +114,17 @@ export function TestimonialEmptyState() {
 function DropletBadge() {
   return (
     <span className="flex h-12 w-12 items-center justify-center rounded-full bg-sky-tint text-secondary">
-      <MapPinIcon width={22} height={22} className="hidden" />
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        aria-hidden="true"
+      >
         <path d="M12 2s6 7.2 6 11.5a6 6 0 1 1-12 0C6 9.2 12 2 12 2z" />
       </svg>
     </span>
-  );
-}
-
-export function TestimonialCard({
-  quote,
-  name,
-  area,
-}: {
-  quote: string;
-  name: string;
-  area: string;
-}) {
-  return (
-    <div className="flex flex-col gap-sm rounded-md border border-border bg-surface-alt p-md shadow-sm">
-      <p className="text-body text-ink">&ldquo;{quote}&rdquo;</p>
-      <p className="text-small lg:text-small-lg text-ink-muted">
-        {name}, {area}
-      </p>
-    </div>
   );
 }

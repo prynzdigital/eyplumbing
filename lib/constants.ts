@@ -2,6 +2,12 @@
 // content-driven data (services, towns, FAQ, testimonials/gallery state).
 // Sourced verbatim from 00-brief.md, 02-seo/*, 03-content/* — do not hardcode
 // duplicates of these values elsewhere in the app.
+//
+// REVISION (single-page architecture pivot, 04-design/wireframes.md Rev 2 /
+// 02-seo/*.md Stage 2c): the site collapsed from 19 routes to 1 (`/`) with 9
+// anchor-linked sections. Per-route metadata (TOWN_METADATA), per-page nav
+// (NAV_LINKS → routes), and the "nearby areas" cross-link data are retired
+// — see build-notes.md Revision History for the full disposition.
 
 export const BUSINESS_NAME = "EY Plumbing Solution";
 export const BUSINESS_NAME_LONG = "EY Plumbing Solution";
@@ -30,8 +36,8 @@ export const ADDRESS = {
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://www.eyplumbingsolution.example";
 
-// CTA copy varies by page urgency framing — see homepage.md "CTA Definitions
-// (Site-Wide)". Every entry points to the same tel: action.
+// CTA copy varies by section urgency framing — see homepage.md "CTA
+// Definitions (Site-Wide)". Every entry points to the same tel: action.
 export const CTA = {
   standard: "Call 055 703 2986",
   emergency: "Call Now — We Answer 24/7",
@@ -44,26 +50,31 @@ export type ServiceSlug =
   | "plumbing-installation"
   | "drain-cleaning-maintenance";
 
+export type ServiceCalloutType = "emergency" | "pricing" | "recurring";
+
 export interface ServiceDef {
   slug: ServiceSlug;
+  /** Full anchor id per wireframes.md's Anchor Map, e.g. "services-plumbing-repair". */
+  anchorId: string;
   name: string;
   shortDescription: string;
-  h1: string;
-  primaryKeyword: string;
+  /** Former page H1 — now this card's Accordion/ServiceDetail trigger H3, per the Heading Map. */
+  h3: string;
   problem: string;
   included: string[];
   whoItsFor: string;
+  calloutType: ServiceCalloutType;
   cta: string;
-  ctaContext: keyof typeof CTA;
 }
 
 export const SERVICES: ServiceDef[] = [
   {
     slug: "plumbing-repair",
+    anchorId: "services-plumbing-repair",
     name: "Plumbing Repair",
-    shortDescription: "Leaks, burst pipes, running taps, blocked toilets. Fast response for urgent jobs.",
-    h1: "Plumbing Repair Services in Accra",
-    primaryKeyword: "plumbing repair accra",
+    shortDescription:
+      "Leaks, burst pipes, running taps, blocked toilets. Fast response for urgent jobs.",
+    h3: "Plumbing Repair Services in Accra",
     problem:
       "A dripping tap, a running toilet, or a pipe leak under the sink doesn't fix itself — and left alone, it usually gets worse and more expensive. EY Plumbing Solution provides plumbing repair across Greater Accra, from small leaks to larger pipe failures, so the problem gets solved properly the first time.",
     included: [
@@ -75,15 +86,15 @@ export const SERVICES: ServiceDef[] = [
     ],
     whoItsFor:
       "Homeowners with an active leak, drip, or fixture problem, and property managers/landlords needing a repair handled at a tenant's unit.",
+    calloutType: "emergency",
     cta: CTA.emergency,
-    ctaContext: "emergency",
   },
   {
     slug: "plumbing-installation",
+    anchorId: "services-plumbing-installation",
     name: "Plumbing Installation",
     shortDescription: "New fixtures, water heaters, pipe replacement.",
-    h1: "Plumbing Installation Services in Accra",
-    primaryKeyword: "plumbing installation accra",
+    h3: "Plumbing Installation Services in Accra",
     problem:
       "Planning a new water heater, replacing old fixtures, or fitting out a new bathroom? Plumbing installation is a job worth getting right the first time — EY Plumbing Solution handles fixture, water heater, and pipe installation across Greater Accra, done properly and explained clearly before we start.",
     included: [
@@ -94,15 +105,15 @@ export const SERVICES: ServiceDef[] = [
     ],
     whoItsFor:
       "Homeowners planning an upgrade or replacement, and property managers preparing a unit for a new tenant.",
+    calloutType: "pricing",
     cta: CTA.considered,
-    ctaContext: "considered",
   },
   {
     slug: "drain-cleaning-maintenance",
+    anchorId: "services-drain-cleaning-maintenance",
     name: "Drain Cleaning & Maintenance",
     shortDescription: "Blockages, routine inspections, ongoing upkeep.",
-    h1: "Drain Cleaning & Plumbing Maintenance in Accra",
-    primaryKeyword: "drain cleaning accra",
+    h3: "Drain Cleaning & Plumbing Maintenance in Accra",
     problem:
       "A slow or blocked drain is usually a warning sign, not a one-off inconvenience — and regular plumbing maintenance catches small problems before they become expensive ones. EY Plumbing Solution offers drain cleaning and routine plumbing maintenance across Greater Accra, for single homes and multi-unit properties alike.",
     included: [
@@ -113,8 +124,8 @@ export const SERVICES: ServiceDef[] = [
     ],
     whoItsFor:
       "Homeowners with a recurring drainage issue, and — especially — property managers and landlords who want one plumber handling ongoing maintenance across several properties instead of a different contact every time something breaks.",
+    calloutType: "recurring",
     cta: CTA.recurring,
-    ctaContext: "recurring",
   },
 ];
 
@@ -125,9 +136,7 @@ export function getService(slug: string): ServiceDef | undefined {
 export interface TownDef {
   slug: string;
   name: string;
-  h1: string;
   intro: string;
-  whatWeDo: string;
   /** Whether this town has genuinely town-specific copy (only McCarthy Hill, per services.md) */
   hasDetailedCopy: boolean;
 }
@@ -135,141 +144,61 @@ export interface TownDef {
 // Service-area town list is a research-based PROPOSAL from seo-strategy.md §5,
 // not yet client-confirmed (00-brief.md Open Questions). Rendered with an
 // explicit "proposed coverage area, pending confirmation" caption per
-// wireframes.md §7 — never presented as final/confirmed coverage.
+// wireframes.md §4 — never presented as final/confirmed coverage.
 export const TOWNS: TownDef[] = [
   {
     slug: "mccarthy-hill",
     name: "McCarthy Hill",
-    h1: "Plumber in McCarthy Hill, Accra",
     intro:
-      "Need a plumber in McCarthy Hill? EY Plumbing Solution is based on 10th Avenue McCarthy, right in the area — we provide plumbing repair, installation, and emergency call-outs to homes and properties in McCarthy Hill and the surrounding neighborhoods. Call us directly, no call center.",
-    whatWeDo:
-      "Repair, installation, drain cleaning & maintenance, and 24/7 emergency call-outs, with the advantage of being based locally in the area.",
+      "Based on 10th Avenue McCarthy, right in the area — repair, installation, drain cleaning & maintenance, and 24/7 emergency call-outs, with the advantage of being based locally.",
     hasDetailedCopy: true,
   },
   {
     slug: "weija",
     name: "Weija",
-    h1: "Plumber in Weija, Accra",
-    intro:
-      "Need a plumber in Weija? EY Plumbing Solution provides plumbing repair, installation, and emergency call-outs to homes and properties in Weija and the surrounding area. Call us directly — no call center, no long wait for a callback.",
-    whatWeDo:
-      "Repair, installation, drain cleaning & maintenance, and 24/7 emergency call-outs — same services as everywhere else we work.",
+    intro: "Repair, installation, drain cleaning & maintenance, and 24/7 emergency call-outs.",
     hasDetailedCopy: false,
   },
   {
     slug: "mallam",
     name: "Mallam",
-    h1: "Plumber in Mallam, Accra",
-    intro:
-      "Need a plumber in Mallam? EY Plumbing Solution provides plumbing repair, installation, and emergency call-outs to homes and properties in Mallam and the surrounding area. Call us directly — no call center, no long wait for a callback.",
-    whatWeDo:
-      "Repair, installation, drain cleaning & maintenance, and 24/7 emergency call-outs — same services as everywhere else we work.",
+    intro: "Repair, installation, drain cleaning & maintenance, and 24/7 emergency call-outs.",
     hasDetailedCopy: false,
   },
   {
     slug: "gbawe",
     name: "Gbawe",
-    h1: "Plumber in Gbawe, Accra",
-    intro:
-      "Need a plumber in Gbawe? EY Plumbing Solution provides plumbing repair, installation, and emergency call-outs to homes and properties in Gbawe and the surrounding area. Call us directly — no call center, no long wait for a callback.",
-    whatWeDo:
-      "Repair, installation, drain cleaning & maintenance, and 24/7 emergency call-outs — same services as everywhere else we work.",
+    intro: "Repair, installation, drain cleaning & maintenance, and 24/7 emergency call-outs.",
     hasDetailedCopy: false,
   },
   {
     slug: "dansoman",
     name: "Dansoman",
-    h1: "Plumber in Dansoman, Accra",
-    intro:
-      "Need a plumber in Dansoman? EY Plumbing Solution provides plumbing repair, installation, and emergency call-outs to homes and properties in Dansoman and the surrounding area. Call us directly — no call center, no long wait for a callback.",
-    whatWeDo:
-      "Repair, installation, drain cleaning & maintenance, and 24/7 emergency call-outs — same services as everywhere else we work.",
+    intro: "Repair, installation, drain cleaning & maintenance, and 24/7 emergency call-outs.",
     hasDetailedCopy: false,
   },
   {
     slug: "odorkor",
     name: "Odorkor",
-    h1: "Plumber in Odorkor, Accra",
-    intro:
-      "Need a plumber in Odorkor? EY Plumbing Solution provides plumbing repair, installation, and emergency call-outs to homes and properties in Odorkor and the surrounding area. Call us directly — no call center, no long wait for a callback.",
-    whatWeDo:
-      "Repair, installation, drain cleaning & maintenance, and 24/7 emergency call-outs — same services as everywhere else we work.",
+    intro: "Repair, installation, drain cleaning & maintenance, and 24/7 emergency call-outs.",
     hasDetailedCopy: false,
   },
   {
     slug: "awoshie",
     name: "Awoshie",
-    h1: "Plumber in Awoshie, Accra",
-    intro:
-      "Need a plumber in Awoshie? EY Plumbing Solution provides plumbing repair, installation, and emergency call-outs to homes and properties in Awoshie and the surrounding area. Call us directly — no call center, no long wait for a callback.",
-    whatWeDo:
-      "Repair, installation, drain cleaning & maintenance, and 24/7 emergency call-outs — same services as everywhere else we work.",
+    intro: "Repair, installation, drain cleaning & maintenance, and 24/7 emergency call-outs.",
     hasDetailedCopy: false,
   },
   {
     slug: "kasoa",
     name: "Kasoa",
-    h1: "Plumber in Kasoa, Accra",
-    intro:
-      "Need a plumber in Kasoa? EY Plumbing Solution provides plumbing repair, installation, and emergency call-outs to homes and properties in Kasoa and the surrounding area. Call us directly — no call center, no long wait for a callback.",
-    whatWeDo:
-      "Repair, installation, drain cleaning & maintenance, and 24/7 emergency call-outs — same services as everywhere else we work.",
+    intro: "Repair, installation, drain cleaning & maintenance, and 24/7 emergency call-outs.",
     hasDetailedCopy: false,
   },
 ];
 
 export function getTown(slug: string): TownDef | undefined {
   return TOWNS.find((t) => t.slug === slug);
-}
-
-// Per-town <title>/description pairs, verbatim from 02-seo/metadata.md.
-export const TOWN_METADATA: Record<string, { title: string; description: string }> = {
-  "mccarthy-hill": {
-    title: "McCarthy Hill Plumber | EY Plumbing Solution Accra",
-    description:
-      "Need a plumber in McCarthy Hill, Accra? EY Plumbing Solution offers fast, reliable repair, installation & emergency plumbing. Call now.",
-  },
-  weija: {
-    title: "Weija Plumber | EY Plumbing Solution Accra",
-    description:
-      "Need a plumber in Weija, Accra? EY Plumbing Solution offers fast, reliable repair, installation & emergency plumbing. Call now.",
-  },
-  mallam: {
-    title: "Mallam Plumber | EY Plumbing Solution Accra",
-    description:
-      "Need a plumber in Mallam, Accra? EY Plumbing Solution offers fast, reliable repair, installation & emergency plumbing. Call now.",
-  },
-  gbawe: {
-    title: "Gbawe Plumber | EY Plumbing Solution Accra",
-    description:
-      "Need a plumber in Gbawe, Accra? EY Plumbing Solution offers fast, reliable repair, installation & emergency plumbing. Call now.",
-  },
-  dansoman: {
-    title: "Dansoman Plumber | EY Plumbing Solution Accra",
-    description:
-      "Need a plumber in Dansoman, Accra? EY Plumbing Solution offers fast, reliable repair, installation & emergency plumbing. Call now.",
-  },
-  odorkor: {
-    title: "Odorkor Plumber | EY Plumbing Solution Accra",
-    description:
-      "Need a plumber in Odorkor, Accra? EY Plumbing Solution offers fast, reliable repair, installation & emergency plumbing. Call now.",
-  },
-  awoshie: {
-    title: "Awoshie Plumber | EY Plumbing Solution Accra",
-    description:
-      "Need a plumber in Awoshie, Accra? EY Plumbing Solution offers fast, reliable repair, installation & emergency plumbing. Call now.",
-  },
-  kasoa: {
-    title: "Kasoa Plumber | EY Plumbing Solution Accra",
-    description:
-      "Need a plumber in Kasoa, Ghana? EY Plumbing Solution offers fast, reliable repair, installation & emergency plumbing. Call now.",
-  },
-};
-
-export function nearbyTowns(currentSlug: string, count = 3): TownDef[] {
-  const others = TOWNS.filter((t) => t.slug !== currentSlug);
-  return others.slice(0, count);
 }
 
 export interface FaqItem {
@@ -284,10 +213,10 @@ export interface FaqCategory {
 }
 
 // Full content of 03-content/faq.md, verbatim, grouped by its own category
-// headers. Rendered as an Accordion/FAQ section on the Services Hub page
-// per wireframes.md's FAQ placement decision (no standalone /faq route in
-// metadata.md's confirmed sitemap). The "Are you licensed and insured?"
-// question is intentionally omitted per faq.md's own recommendation.
+// headers. Now a first-class `#faq` section per wireframes.md §8 (the
+// Revision 1 "folded into Services Hub" placement decision is superseded).
+// The "Are you licensed and insured?" question is intentionally omitted per
+// faq.md's own recommendation.
 export const FAQ_CATEGORIES: FaqCategory[] = [
   {
     id: "emergency-response",
@@ -364,7 +293,7 @@ export const FAQ_CATEGORIES: FaqCategory[] = [
           "We're based in Greater Accra, working from 10th Avenue McCarthy, and serve homeowners and property managers across the wider area.",
       },
       // "Are you licensed and insured?" intentionally omitted — see faq.md
-      // and wireframes.md §3: the fact is unconfirmed and must not ship
+      // and wireframes.md §8: the fact is unconfirmed and must not ship
       // with a placeholder answer visible to visitors.
     ],
   },
@@ -399,44 +328,43 @@ export const TRUST_SIGNALS = [
   "Repair, Installation & Maintenance Under One Business",
 ];
 
-// Primary nav structure — mirrors wireframes.md §0 Header/NavBar spec.
-export interface NavLink {
-  label: string;
-  href: string;
-  children?: { label: string; href: string }[];
-}
-
-export const NAV_LINKS: NavLink[] = [
-  { label: "Home", href: "/" },
-  {
-    label: "Services",
-    href: "/services",
-    children: SERVICES.map((s) => ({ label: s.name, href: `/services/${s.slug}` })),
-  },
-  { label: "Emergency Plumbing", href: "/emergency-plumbing" },
-  {
-    label: "Service Areas",
-    href: "/service-areas",
-    children: TOWNS.map((t) => ({ label: t.name, href: `/service-areas/${t.slug}` })),
-  },
-  { label: "Gallery", href: "/gallery" },
-  { label: "Testimonials", href: "/testimonials" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
+// Emergency section content — was the standalone /emergency-plumbing page,
+// now Panel/EmergencyDetail beneath Band/Emergency inside #emergency
+// (wireframes.md §3).
+export const EMERGENCY_SIGNS = [
+  "Burst or badly leaking pipes",
+  "Flooding",
+  "Sewage backup",
+  "A toilet or drain that won't stop overflowing",
+  "No water supply to the whole property",
 ];
 
-// Footer "Site links" column — includes the FAQ anchor per the FAQ
-// placement decision in wireframes.md (no standalone /faq route).
-export const FOOTER_SITE_LINKS: { label: string; href: string }[] = [
-  { label: "Home", href: "/" },
-  { label: "Services", href: "/services" },
-  ...SERVICES.map((s) => ({ label: s.name, href: `/services/${s.slug}` })),
-  { label: "Emergency Plumbing", href: "/emergency-plumbing" },
-  { label: "Gallery", href: "/gallery" },
-  { label: "Testimonials", href: "/testimonials" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
-  { label: "FAQ", href: "/services#faq" },
+// Primary section anchor nav — mirrors wireframes.md §0 Header/NavBar spec.
+// Replaces the former per-route NAV_LINKS. "Home" has no entry here: the
+// logo itself scrolls to #hero (see Header.tsx).
+export interface SectionNavLink {
+  id: string;
+  label: string;
+}
+
+export const SECTION_NAV: SectionNavLink[] = [
+  { id: "services", label: "Services" },
+  { id: "emergency", label: "Emergency" },
+  { id: "service-areas", label: "Service Areas" },
+  { id: "gallery", label: "Gallery" },
+  { id: "testimonials", label: "Testimonials" },
+  { id: "about", label: "About" },
+  { id: "faq", label: "FAQ" },
+  { id: "contact", label: "Contact" },
+];
+
+// Footer "Section Links" column — the same 8 anchors as the nav, plus Home.
+// The former per-town-link "Service Areas" column is retired (wireframes.md
+// §0 Footer note) — all 8 towns are visible together in #service-areas, so
+// a single link covers it.
+export const FOOTER_SECTION_LINKS: SectionNavLink[] = [
+  { id: "hero", label: "Home" },
+  ...SECTION_NAV,
 ];
 
 export const GALLERY_PLACEHOLDER_COUNT = 8;

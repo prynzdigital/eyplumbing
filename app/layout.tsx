@@ -5,7 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import StickyEmergencyBar from "@/components/layout/StickyEmergencyBar";
 import { BUSINESS_NAME, SITE_URL } from "@/lib/constants";
-import { jsonLd, organizationSchema, plumberSchema } from "@/lib/schema";
+import { faqSchema, jsonLd, organizationSchema, plumberSchema } from "@/lib/schema";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -14,22 +14,30 @@ const inter = Inter({
   display: "swap",
 });
 
-// No title template here: every page below sets its own complete <title>
-// verbatim from 02-seo/metadata.md (several intentionally omit the business
-// name or place it differently) — a template would silently double up the
-// business name on top of that approved copy. `default` only applies to a
-// route that defines no metadata of its own (none currently do).
+// Single site metadata — 02-seo/metadata.md §1 (Stage 2c revision). The
+// site collapsed from 19 routes to 1 indexable URL, so there is exactly
+// one <title>/<meta name="description"> now, not a per-page table. This
+// title is reused verbatim from the former Home page (it already served
+// both the primary "plumber accra" and secondary "emergency plumber accra"
+// intents in one string).
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: `${BUSINESS_NAME} | Accra Plumber, 24/7 Emergency Calls`,
   description:
-    "24/7 emergency plumber in Greater Accra, Ghana. Fast repairs, installations & maintenance from EY Plumbing Solution. Call now.",
+    "24/7 emergency plumber serving Greater Accra & surrounding towns. Repairs, installations & drain maintenance — call EY Plumbing Solution now.",
+  alternates: { canonical: "/" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
       <body className="flex min-h-screen flex-col font-sans antialiased">
+        {/* Consolidated schema plan — 02-seo/seo-strategy.md §6 (Stage 2c):
+            one Plumber entity (with hasOfferCatalog covering all 4
+            services + areaServed covering all 8 towns), one complementary
+            Organization block, and a genuinely new FAQPage block. No
+            per-page Service/Plumber duplication and no BreadcrumbList
+            (retired — no URL hierarchy left to describe). */}
         <script
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
@@ -39,6 +47,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: jsonLd(organizationSchema()) }}
+        />
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: jsonLd(faqSchema()) }}
         />
         <Header />
         <main id="main-content" className="flex-1 pb-16 lg:pb-0">

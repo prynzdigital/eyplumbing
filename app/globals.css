@@ -14,6 +14,81 @@
   ::selection {
     @apply bg-accent text-white;
   }
+
+  /* Anchor Scroll Offsets — design-system.md §4a. Header/NavBar is
+     sticky-fixed at every breakpoint in the single-page architecture, so
+     every section's anchor target needs scroll-margin-top or an anchor
+     jump would tuck the section's heading under the fixed nav. */
+  section[id] {
+    scroll-margin-top: 72px; /* nav-height-mobile (64px) + 8px buffer */
+  }
+
+  @media (min-width: 1024px) {
+    section[id] {
+      scroll-margin-top: 88px; /* nav-height-desktop (80px) + 8px buffer */
+    }
+  }
+}
+
+/* Surface/Frost primitive — design-system.md §2b. Values are pulled from
+   tailwind.config.ts via theme() so the config file stays the single
+   source of truth for every color/shadow token used here. */
+@layer components {
+  .frost-light {
+    background-color: theme("colors.frost.light");
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid theme("colors.frost.light-border");
+    box-shadow: theme("boxShadow.frost");
+    border-radius: theme("borderRadius.md");
+  }
+
+  .frost-light-hover:hover {
+    background-color: theme("colors.frost.light-hover");
+    border-color: theme("colors.secondary.DEFAULT");
+  }
+
+  /* Nested frost surfaces (e.g. an expanded Accordion/ServiceDetail panel
+     sitting beneath its Card/Service trigger) use a slightly lower-opacity
+     fill so the two read as one connected unit, per design-system.md §6. */
+  .frost-light-nested {
+    background-color: theme("colors.frost.light");
+    opacity: 0.92;
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid theme("colors.frost.light-border");
+    border-radius: theme("borderRadius.md");
+  }
+
+  .frost-media {
+    background-color: theme("colors.frost.media");
+  }
+
+  /* Header/NavBar solid/frosted scrolled state — same Frost/Light system,
+     no border-radius (full-width bar) and no blur cap change. */
+  .frost-nav {
+    background-color: theme("colors.frost.light");
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    box-shadow: theme("boxShadow.frost");
+  }
+}
+
+/* Fallback for browsers without backdrop-filter support — design-system.md
+   §2b. Frost surfaces render as solid fills with no blur; legibility only
+   improves versus the calculated blurred figures, never degrades. */
+@supports not (backdrop-filter: blur(1px)) {
+  .frost-light,
+  .frost-light-nested {
+    background-color: theme("colors.frost.light-fallback");
+    backdrop-filter: none;
+  }
+
+  .frost-media,
+  .frost-nav {
+    background-color: theme("colors.frost.media-fallback");
+    backdrop-filter: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

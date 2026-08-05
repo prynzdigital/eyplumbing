@@ -1,34 +1,96 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { BUSINESS_NAME, CTA, NAV_LINKS, PHONE_DISPLAY, PHONE_TEL } from "@/lib/constants";
+import { useEffect, useRef, useState } from "react";
+import { BUSINESS_NAME, CTA, PHONE_DISPLAY, PHONE_TEL, SECTION_NAV } from "@/lib/constants";
 import Container from "../ui/Container";
 import CallCTA from "../ui/Button";
-import { ChevronIcon, CloseIcon, MenuIcon } from "../ui/icons";
+import { CloseIcon, MenuIcon } from "../ui/icons";
 
-// Header/NavBar — design-system.md §6 / wireframes.md §0.
-// Desktop (lg+): sticky-fixed top bar with dropdowns + CallCTA (this alone
-// satisfies "always reachable" on desktop, no separate bottom bar).
-// Mobile (base): static bar, hamburger opens a full-screen overlay nav; the
-// phone/CTA lives in the bottom Bar/StickyEmergencyCall instead so there
-// aren't two competing call buttons on a small screen.
+// Header/NavBar (UPDATED — design-system.md §6 / wireframes.md §0).
+// Sticky-fixed at every breakpoint (a change from the prior desktop-only
+// sticky pattern). Two states:
+//  - `transparent` (default, over the hero): no background of its own —
+//    legibility guaranteed by Hero/Slider's own full-height frost-media-bg
+//    scrim underneath. Logo + nav links render white.
+//  - `solid`/frosted (past the hero): frost-light-bg + blur + shadow-frost,
+//    logo + nav links switch to ink.
+// The threshold is driven by an IntersectionObserver on the hero's own
+// bottom-edge sentinel (#hero-bottom-sentinel), not a fixed scroll pixel
+// value, per the exact spec in design-system.md §6.
 export default function Header() {
-  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [solid, setSolid] = useState(false);
+  const [activeId, setActiveId] = useState<string>("hero");
+  const [navHeight, setNavHeight] = useState(80);
+  const headerRef = useRef<HTMLElement>(null);
 
+  // Measure the header's own rendered height so the IntersectionObserver
+  // threshold below always matches the nav's real height at the current
+  // breakpoint (64px mobile / 80px desktop) instead of hardcoding either.
   useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 0);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    function measure() {
+      if (headerRef.current) setNavHeight(headerRef.current.offsetHeight);
+    }
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
   }, []);
+
+  // Transparent → solid/frosted threshold — driven by an IntersectionObserver
+  // on the hero's own bottom-edge sentinel, not a fixed scroll pixel value,
+  // per design-system.md §6.
+  useEffect(() => {
+    const sentinel = document.getElementById("hero-bottom-sentinel");
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // Sentinel sits at the hero's bottom edge. While it is still below
+        // the (navHeight-offset) line, the nav is still overlapping the
+        // hero → transparent. Once it scrolls above that line, the nav has
+        // moved onto plain section content (no scrim) → solid.
+        setSolid(entry ? !entry.isIntersecting : false);
+      },
+      { rootMargin: `-${navHeight}px 0px 0px 0px`, threshold: 0 }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [navHeight]);
+
+  // Scrollspy — IntersectionObserver watching every section's anchor,
+  // replacing the old "current page" URL-match logic (there is only one
+  // URL now).
+  useEffect(() => {
+    const ids = ["hero", ...SECTION_NAV.map((l) => l.id)];
+    const sections = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+    if (sections.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting);
+        if (visible.length > 0) {
+          const topMost = visible.reduce((a, b) => (a.boundingClientRect.top <= b.boundingClientRect.top ? a : b));
+          setActiveId(topMost.target.id);
+        }
+      },
+      { rootMargin: "-45% 0px -45% 0px", threshold: 0 }
+    );
+    sections.forEach((s) => observer.observe(s));
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setMobileOpen(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobileOpen]);
+
+  const textColor = solid ? "text-ink" : "text-white";
 
   return (
     <>
@@ -39,86 +101,75 @@ export default function Header() {
         Skip to main content
       </a>
       <header
-        className={`sticky top-0 z-40 hidden border-b border-border bg-surface-alt lg:block ${
-          scrolled ? "shadow-md" : ""
-        }`}
+        ref={headerRef}
+        className={`fixed inset-x-0 top-0 z-40 transition-colors duration-200 ${solid ? "frost-nav" : "bg-transparent"}`}
       >
         <Container>
-          <div className="flex h-20 items-center justify-between gap-lg">
-            <Link href="/" className="text-h4-lg font-bold text-primary">
+          <div className="flex h-16 items-center justify-between gap-lg lg:h-20">
+            <a
+              href="#hero"
+              className={`rounded-sm text-h4-lg font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${textColor} ${
+                solid
+                  ? "focus-visible:outline-primary"
+                  : "focus-visible:outline-white focus-visible:ring-2 focus-visible:ring-primary"
+              }`}
+            >
               {BUSINESS_NAME}
-            </Link>
-            <nav aria-label="Primary" className="flex items-center gap-lg">
-              {NAV_LINKS.map((link) =>
-                link.children ? (
-                  <div key={link.href} className="group relative">
-                    <Link
-                      href={link.href}
-                      className={`flex items-center gap-2xs py-sm text-body font-medium transition-colors hover:text-secondary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${
-                        isActive(pathname, link.href) ? "border-b-2 border-secondary text-secondary" : "text-ink"
-                      }`}
-                    >
-                      {link.label}
-                      <ChevronIcon width={14} height={14} aria-hidden="true" />
-                    </Link>
-                    <div className="invisible absolute left-0 top-full z-50 min-w-[220px] rounded-md border border-border bg-surface-alt py-xs opacity-0 shadow-md transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                      {link.children.map((child) => (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          className="block px-md py-xs text-body text-ink hover:bg-sky-tint hover:text-secondary-hover focus-visible:bg-sky-tint focus-visible:outline-none"
-                        >
-                          {child.label}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`py-sm text-body font-medium transition-colors hover:text-secondary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${
-                      isActive(pathname, link.href) ? "border-b-2 border-secondary text-secondary" : "text-ink"
+            </a>
+
+            <nav aria-label="Primary" className="hidden items-center gap-lg lg:flex">
+              {SECTION_NAV.map((link) => {
+                const isActive = activeId === link.id;
+                return (
+                  <a
+                    key={link.id}
+                    href={`#${link.id}`}
+                    className={`rounded-sm border-b-2 py-sm text-body font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                      solid
+                        ? `focus-visible:outline-primary hover:text-secondary-hover ${
+                            isActive ? "border-secondary text-secondary" : "border-transparent text-ink"
+                          }`
+                        : `focus-visible:outline-white focus-visible:ring-2 focus-visible:ring-primary hover:text-white ${
+                            isActive
+                              ? "border-white text-white"
+                              : "border-transparent text-white/85"
+                          }`
                     }`}
                   >
                     {link.label}
-                  </Link>
-                )
-              )}
+                  </a>
+                );
+              })}
             </nav>
-            <div className="flex items-center gap-md">
+
+            <div className="hidden items-center gap-md lg:flex">
               <a
                 href={PHONE_TEL}
-                className="text-phone-lg font-bold text-primary hover:text-secondary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+                className={`rounded-sm text-phone-lg font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                  solid
+                    ? "text-primary hover:text-secondary-hover focus-visible:outline-primary"
+                    : "text-white hover:text-white/80 focus-visible:outline-white focus-visible:ring-2 focus-visible:ring-primary"
+                }`}
               >
                 {PHONE_DISPLAY}
               </a>
               <CallCTA label={CTA.standard} size="compact" />
             </div>
-          </div>
-        </Container>
-      </header>
 
-      {/* Mobile header is static (not sticky) per wireframes.md §0 — the
-          bottom Bar/StickyEmergencyCall carries persistent-visibility duty
-          on small screens instead, avoiding two fixed bars stacking. */}
-      <header className="relative z-40 border-b border-border bg-surface-alt lg:hidden">
-        <Container>
-          <div className="flex h-16 items-center justify-between">
             <button
               type="button"
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav-overlay"
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               onClick={() => setMobileOpen((v) => !v)}
-              className="flex h-11 w-11 items-center justify-center rounded-sm text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+              className={`flex h-11 w-11 items-center justify-center rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 lg:hidden ${
+                solid
+                  ? "text-ink focus-visible:outline-primary"
+                  : "text-white focus-visible:outline-white focus-visible:ring-2 focus-visible:ring-primary"
+              }`}
             >
               {mobileOpen ? <CloseIcon /> : <MenuIcon />}
             </button>
-            <Link href="/" className="text-h4 font-bold text-primary">
-              {BUSINESS_NAME}
-            </Link>
-            <span className="w-11" aria-hidden="true" />
           </div>
         </Container>
       </header>
@@ -126,35 +177,29 @@ export default function Header() {
       {mobileOpen && (
         <div
           id="mobile-nav-overlay"
-          className="fixed inset-0 top-16 z-30 overflow-y-auto bg-primary lg:hidden"
+          className="fixed inset-0 top-16 z-30 overflow-y-auto bg-primary shadow-lg lg:hidden"
         >
           <nav aria-label="Mobile" className="flex flex-col gap-2xs p-md">
-            {NAV_LINKS.map((link) => (
-              <div key={link.href} className="border-b border-white/10 py-xs">
-                <Link
-                  href={link.href}
-                  className="block py-sm text-h4 font-semibold text-white"
-                >
-                  {link.label}
-                </Link>
-                {link.children && (
-                  <div className="flex flex-col gap-2xs pb-xs pl-md">
-                    {link.children.map((child) => (
-                      <Link
-                        key={child.href}
-                        href={child.href}
-                        className="py-2xs text-body text-white/80 hover:text-white"
-                      >
-                        {child.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
+            <a
+              href="#hero"
+              onClick={() => setMobileOpen(false)}
+              className="rounded-sm border-b border-white/10 py-sm text-h4 font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              Home
+            </a>
+            {SECTION_NAV.map((link) => (
+              <a
+                key={link.id}
+                href={`#${link.id}`}
+                onClick={() => setMobileOpen(false)}
+                className="rounded-sm border-b border-white/10 py-sm text-h4 font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                {link.label}
+              </a>
             ))}
             <a
               href={PHONE_TEL}
-              className="mt-md text-center text-phone-lg font-bold text-white"
+              className="mt-md rounded-sm text-center text-phone-lg font-bold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white focus-visible:ring-2 focus-visible:ring-primary"
             >
               {PHONE_DISPLAY}
             </a>
@@ -163,9 +208,4 @@ export default function Header() {
       )}
     </>
   );
-}
-
-function isActive(pathname: string, href: string) {
-  if (href === "/") return pathname === "/";
-  return pathname === href || pathname.startsWith(`${href}/`);
 }

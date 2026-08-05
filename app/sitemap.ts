@@ -1,27 +1,19 @@
 import { MetadataRoute } from "next";
-import { SERVICES, SITE_URL, TOWNS } from "@/lib/constants";
+import { SITE_URL } from "@/lib/constants";
 
+// Single-URL sitemap — 02-seo/seo-strategy.md §7 (Stage 2c revision). Still
+// worth keeping (trivial cost, explicit lastmod signal, some SEO tooling
+// expects it) even though its former multi-URL discovery/prioritization
+// role is gone now that the site is one page. See seo-strategy.md §7 for
+// the full reasoning — Google Business Profile's service-area
+// configuration, not this file, is what now carries per-town discovery.
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticRoutes = [
-    "",
-    "/emergency-plumbing",
-    "/services",
-    "/service-areas",
-    "/gallery",
-    "/testimonials",
-    "/about",
-    "/contact",
+  return [
+    {
+      url: SITE_URL,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 1,
+    },
   ];
-
-  const serviceRoutes = SERVICES.map((s) => `/services/${s.slug}`);
-  const townRoutes = TOWNS.map((t) => `/service-areas/${t.slug}`);
-
-  const allRoutes = [...staticRoutes, ...serviceRoutes, ...townRoutes];
-
-  return allRoutes.map((route) => ({
-    url: `${SITE_URL}${route}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly",
-    priority: route === "" ? 1 : route === "/emergency-plumbing" ? 0.9 : 0.7,
-  }));
 }

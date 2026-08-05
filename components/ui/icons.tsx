@@ -94,6 +94,25 @@ export function CloseIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+// Hero/Slider manual controls — styled identically to ChevronIcon
+// (style-guide.md §5: "styled identically to the existing chevron icon
+// family so the icon set stays internally consistent").
+export function ChevronLeftIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <path d="m15 18-6-6 6-6" />
+    </svg>
+  );
+}
+
+export function ChevronRightIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <path d="m9 18 6-6-6-6" />
+    </svg>
+  );
+}
+
 export function ImageIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base(props)}>

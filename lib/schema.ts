@@ -1,13 +1,33 @@
-// Structured-data (schema.org JSON-LD) builders, per 02-seo/seo-strategy.md §6.
-// Only currently-confirmable facts are encoded — no invented ratings, review
+// Structured-data (schema.org JSON-LD) builders, per 02-seo/seo-strategy.md
+// §6 (Stage 2c revision — consolidated single-URL schema plan). Only
+// currently-confirmable facts are encoded — no invented ratings, review
 // counts, licensing claims, or logo image (no real logo file exists yet).
+// `BreadcrumbList` is retired (no URL hierarchy left to describe, mirrors
+// the Breadcrumb UI component's retirement).
 
-import { ADDRESS, ADDRESS_LINE, BUSINESS_NAME, PHONE_TEL, SITE_URL, TOWNS } from "./constants";
+import {
+  ADDRESS,
+  BUSINESS_NAME,
+  EMERGENCY_SIGNS,
+  FAQ_CATEGORIES,
+  PHONE_TEL,
+  SERVICES,
+  SITE_URL,
+  TOWNS,
+} from "./constants";
 
+const BUSINESS_ID = `${SITE_URL}/#business`;
+
+// Main business entity — `Plumber` (subtype of HomeAndConstructionBusiness →
+// LocalBusiness), once, with a `hasOfferCatalog` covering all 4 services
+// (the 3 SERVICES entries + Emergency) and one `areaServed` array covering
+// all 8 towns — replaces the former 19-page architecture's per-page
+// `Plumber`/`Service`/`areaServed` duplication.
 export function plumberSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "Plumber",
+    "@id": BUSINESS_ID,
     name: BUSINESS_NAME,
     url: SITE_URL,
     telephone: PHONE_TEL.replace("tel:", ""),
@@ -33,9 +53,43 @@ export function plumberSchema() {
       opens: "00:00",
       closes: "23:59",
     },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Plumbing Services",
+      itemListElement: [
+        ...SERVICES.map((service) => ({
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: service.name,
+            serviceType: service.name,
+            description: service.problem,
+            url: `${SITE_URL}/#${service.anchorId}`,
+            provider: { "@id": BUSINESS_ID },
+            areaServed: { "@type": "AdministrativeArea", name: "Greater Accra, Ghana" },
+          },
+        })),
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Emergency Plumbing",
+            serviceType: "Emergency Plumbing",
+            description: `24/7 emergency plumbing call-outs across Greater Accra — ${EMERGENCY_SIGNS.join(
+              ", "
+            ).toLowerCase()}.`,
+            url: `${SITE_URL}/#emergency`,
+            provider: { "@id": BUSINESS_ID },
+            areaServed: { "@type": "AdministrativeArea", name: "Greater Accra, Ghana" },
+          },
+        },
+      ],
+    },
   };
 }
 
+// Brand/logo — complementary to the Plumber entity (unchanged principle
+// from Stage 2: no logo image URL since no real logo file exists yet).
 export function organizationSchema() {
   return {
     "@context": "https://schema.org",
@@ -50,39 +104,22 @@ export function organizationSchema() {
   };
 }
 
-export function serviceSchema(opts: {
-  serviceType: string;
-  description: string;
-  url: string;
-  areaServedTown?: string;
-}) {
+// FAQPage — genuinely new schema opportunity that did not exist in the
+// Stage 2 plan (seo-strategy.md §6). Maps 1:1 onto faq.md's real Q&A
+// content; the licensing question stays omitted, matching the visible
+// #faq section exactly (no schema-only content that isn't also on-page).
+export function faqSchema() {
+  const allQuestions = FAQ_CATEGORIES.flatMap((category) => category.items);
   return {
     "@context": "https://schema.org",
-    "@type": "Service",
-    serviceType: opts.serviceType,
-    description: opts.description,
-    url: `${SITE_URL}${opts.url}`,
-    provider: {
-      "@type": "Plumber",
-      name: BUSINESS_NAME,
-      telephone: PHONE_TEL.replace("tel:", ""),
-      address: ADDRESS_LINE,
-    },
-    areaServed: opts.areaServedTown
-      ? { "@type": "City", name: `${opts.areaServedTown}, Greater Accra` }
-      : { "@type": "AdministrativeArea", name: "Greater Accra, Ghana" },
-  };
-}
-
-export function breadcrumbSchema(items: { name: string; url: string }[]) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: items.map((item, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      name: item.name,
-      item: `${SITE_URL}${item.url}`,
+    "@type": "FAQPage",
+    mainEntity: allQuestions.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
     })),
   };
 }

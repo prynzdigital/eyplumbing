@@ -31,6 +31,34 @@ const config: Config = {
         },
         border: "#D7E1E8",
         error: "#C22B2B",
+        // Slate neutral scale — design-system.md §2a. 4 of 10 steps are the
+        // exact existing surface/border/ink-muted/ink hex values above
+        // (kept there too, so nothing that already referenced those tokens
+        // breaks); the other 6 are new intermediate/extension steps.
+        slate: {
+          50: "#F7F9FB", // = surface
+          100: "#EEF2F6",
+          200: "#D7E1E8", // = border
+          300: "#B9C6D1",
+          400: "#8CA0AF", // decorative-fill only, fails 3:1 — never text
+          500: "#6B7F8E", // large-text/icon only (3:1) — fails 4.5:1 body text
+          600: "#51636F", // = ink-muted
+          700: "#384856",
+          800: "#223140",
+          900: "#16232E", // = ink
+        },
+        // Frost/Glassmorphism surface tokens — design-system.md §2b. Composed
+        // in app/globals.css via Tailwind's `theme()` function so this file
+        // stays the single source of truth for every value.
+        frost: {
+          light: "rgba(255,255,255,0.64)",
+          "light-hover": "rgba(255,255,255,0.78)",
+          "light-fallback": "rgba(255,255,255,0.92)",
+          "light-border": "rgba(15,23,42,0.08)",
+          media: "rgba(11,46,79,0.70)",
+          "media-fallback": "rgba(11,46,79,0.78)",
+          "media-border": "rgba(255,255,255,0.35)",
+        },
       },
       fontFamily: {
         sans: [
@@ -74,6 +102,9 @@ const config: Config = {
         "2xl": "48px",
         "3xl": "64px",
         "4xl": "96px",
+        // Anchor scroll offsets — design-system.md §4a.
+        "nav-mobile": "64px",
+        "nav-desktop": "80px",
       },
       borderRadius: {
         sm: "6px",
@@ -84,6 +115,13 @@ const config: Config = {
         sm: "0 1px 3px rgba(11,46,79,0.10)",
         md: "0 4px 12px rgba(11,46,79,0.15)",
         lg: "0 12px 32px rgba(11,46,79,0.22)",
+        // Frost/Glassmorphism shadow — design-system.md §2b/§5.
+        frost: "0 8px 32px rgba(15,23,42,0.14)",
+      },
+      backdropBlur: {
+        "frost-sm": "12px",
+        "frost-md": "16px",
+        "frost-lg": "24px",
       },
       maxWidth: {
         prose: "65ch",

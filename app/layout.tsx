@@ -5,7 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import StickyEmergencyBar from "@/components/layout/StickyEmergencyBar";
 import { BUSINESS_NAME, SITE_URL } from "@/lib/constants";
-import { faqSchema, jsonLd, organizationSchema, plumberSchema } from "@/lib/schema";
+import { jsonLd, organizationSchema, plumberSchema } from "@/lib/schema";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -34,10 +34,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="flex min-h-screen flex-col font-sans antialiased">
         {/* Consolidated schema plan — 02-seo/seo-strategy.md §6 (Stage 2c):
             one Plumber entity (with hasOfferCatalog covering all 4
-            services + areaServed covering all 8 towns), one complementary
-            Organization block, and a genuinely new FAQPage block. No
-            per-page Service/Plumber duplication and no BreadcrumbList
-            (retired — no URL hierarchy left to describe). */}
+            services + areaServed covering all 8 towns) and one
+            complementary Organization block. No per-page Service/Plumber
+            duplication and no BreadcrumbList (retired — no URL hierarchy
+            left to describe). FAQPage schema removed along with the #faq
+            section (client request) — schema must match visible content. */}
         <script
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
@@ -47,11 +48,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: jsonLd(organizationSchema()) }}
-        />
-        <script
-          type="application/ld+json"
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: jsonLd(faqSchema()) }}
         />
         <Header />
         <main id="main-content" className="flex-1 pb-16 lg:pb-0">

@@ -72,8 +72,7 @@ export default function ServicesSection() {
         <div className="mt-lg">
           <EmergencyBand
             headline="Is It an Emergency Right Now?"
-            body="Pipe burst or major leak? Skip straight to emergency service."
-            href="#emergency"
+            body="Pipe burst or major leak? Call us directly — we treat it as a priority."
             compact
           />
         </div>
@@ -126,11 +125,8 @@ function ServiceCallout({ type }: { type: ServiceDef["calloutType"] }) {
       <div className="rounded-md border-l-4 border-accent bg-sky-tint p-md">
         <h4 className="text-h4 font-semibold text-ink">Is This an Emergency?</h4>
         <p className="mt-2xs text-body text-ink-muted">
-          If water is actively flooding or a pipe has burst,{" "}
-          <a href="#emergency" className="font-medium text-secondary hover:text-secondary-hover hover:underline">
-            go to Emergency instead
-          </a>
-          .
+          If water is actively flooding or a pipe has burst, call us right away — we treat it as
+          a priority every time.
         </p>
       </div>
     );
@@ -153,11 +149,7 @@ function ServiceCallout({ type }: { type: ServiceDef["calloutType"] }) {
       <h4 className="text-h4 font-semibold text-ink">Recurring Service Note</h4>
       <p className="mt-2xs text-body text-ink-muted">
         Ask us directly and we&apos;ll talk through what a regular maintenance visit schedule
-        could look like for your property or portfolio. See our answers on{" "}
-        <a href="#faq" className="font-medium text-secondary hover:text-secondary-hover hover:underline">
-          ongoing &amp; multi-property service
-        </a>
-        .
+        could look like for your property or portfolio.
       </p>
     </div>
   );

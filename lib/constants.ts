@@ -349,12 +349,9 @@ export interface SectionNavLink {
 
 export const SECTION_NAV: SectionNavLink[] = [
   { id: "services", label: "Services" },
-  { id: "emergency", label: "Emergency" },
   { id: "service-areas", label: "Service Areas" },
   { id: "gallery", label: "Gallery" },
-  { id: "testimonials", label: "Testimonials" },
   { id: "about", label: "About" },
-  { id: "faq", label: "FAQ" },
   { id: "contact", label: "Contact" },
 ];
 

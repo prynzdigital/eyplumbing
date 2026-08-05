@@ -9,7 +9,6 @@ import {
   ADDRESS,
   BUSINESS_NAME,
   EMERGENCY_SIGNS,
-  FAQ_CATEGORIES,
   PHONE_TEL,
   SERVICES,
   SITE_URL,
@@ -78,7 +77,7 @@ export function plumberSchema() {
             description: `24/7 emergency plumbing call-outs across Greater Accra — ${EMERGENCY_SIGNS.join(
               ", "
             ).toLowerCase()}.`,
-            url: `${SITE_URL}/#emergency`,
+            url: SITE_URL,
             provider: { "@id": BUSINESS_ID },
             areaServed: { "@type": "AdministrativeArea", name: "Greater Accra, Ghana" },
           },
@@ -101,26 +100,6 @@ export function organizationSchema() {
       "@type": "PostalAddress",
       ...ADDRESS,
     },
-  };
-}
-
-// FAQPage — genuinely new schema opportunity that did not exist in the
-// Stage 2 plan (seo-strategy.md §6). Maps 1:1 onto faq.md's real Q&A
-// content; the licensing question stays omitted, matching the visible
-// #faq section exactly (no schema-only content that isn't also on-page).
-export function faqSchema() {
-  const allQuestions = FAQ_CATEGORIES.flatMap((category) => category.items);
-  return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: allQuestions.map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: item.answer,
-      },
-    })),
   };
 }
 

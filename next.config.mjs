@@ -7,7 +7,9 @@ const nextConfig = {
   // redirect, not 404, since it may already be bookmarked/shared/indexed.
   async redirects() {
     return [
-      { source: "/emergency-plumbing", destination: "/#emergency", permanent: true },
+      // Emergency section removed (client request) — redirect to the
+      // homepage root instead of a now-nonexistent anchor.
+      { source: "/emergency-plumbing", destination: "/", permanent: true },
       { source: "/services", destination: "/#services", permanent: true },
       {
         source: "/services/plumbing-repair",
@@ -30,7 +32,9 @@ const nextConfig = {
       // arrival at #service-areas (seo-strategy.md §4b).
       { source: "/service-areas/:town", destination: "/#service-areas", permanent: true },
       { source: "/gallery", destination: "/#gallery", permanent: true },
-      { source: "/testimonials", destination: "/#testimonials", permanent: true },
+      // Testimonials section removed (client request) — redirect to the
+      // homepage root instead of a now-nonexistent anchor.
+      { source: "/testimonials", destination: "/", permanent: true },
       { source: "/about", destination: "/#about", permanent: true },
       { source: "/contact", destination: "/#contact", permanent: true },
     ];
